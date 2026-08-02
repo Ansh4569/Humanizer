@@ -88,6 +88,15 @@
     #output { font-size: 15px; line-height: 1.5; color: #ffffff; white-space: pre-wrap; }
     .counter { text-align: right; font-size: 12px; color: #72767d; margin-top: 5px; }
   </style>
+  
+  <!-- Importing Google's official client-side AI script module library directly inside the browser -->
+  <script type="importmap">
+    {
+      "imports": {
+        "@google/generative-ai": "https://esm.run"
+      }
+    }
+  </script>
 </head>
 <body>
 
@@ -116,14 +125,17 @@
     </div>
   </div>
 
-  <script>
-    function updateCount() {
+  <script type="module">
+    import { GoogleGenerativeAI } from "@google/generative-ai";
+
+    // Linking functions globally so the HTML buttons can find them easily
+    window.updateCount = function() {
       const text = document.getElementById('userStory').value;
       document.getElementById('charCount').innerText = text.length + " characters";
     }
 
-    function humanizeMessage() {
-      const input = document.getElementById('userStory').value.toLowerCase();
+    window.humanizeMessage = async function() {
+      const input = document.getElementById('userStory').value;
       const tone = document.getElementById('toneSelect').value;
       const outputDiv = document.getElementById('output');
       const copyBtn = document.getElementById('copyButton');
@@ -134,47 +146,37 @@
         return;
       }
 
-      outputDiv.innerText = "✨ Processing your message instantly...";
+      outputDiv.innerText = "✨ AI brain is spinning up... rewriting your text uniquely...";
       copyBtn.style.display = "none";
 
-      setTimeout(() => {
-        let textResult = "";
+      // Your working live Google Gemini token pass value
+      const API_KEY = "AQ.Ab8RN6KSxd8oWan42RIVD6dt9TW04N1Pgshf08HNToEviuexcw";
 
-        // Intelligent Keyword Mapping Layer
-        if (input.includes("sick") || input.includes("food") || input.includes("stomach")) {
-          if (tone === "casual text format") {
-            textResult = "Hey! Woke up feeling super rough today, think it was something I ate. Gonna rest up and stay in bed, talk to you later!";
-          } else if (tone === "professional email format") {
-            textResult = "Good morning, I am writing to inform you that I am currently unwell with suspected food poisoning and will be unable to attend today. I will keep you updated on my recovery progress.";
-          } else {
-            textResult = "Omg literally typing this from the bathroom floor, total food poisoning disaster 😭 text you later if I survive this!";
-          }
-        } else if (input.includes("late") || input.includes("traffic") || input.includes("tire") || input.includes("car")) {
-          if (tone === "casual text format") {
-            textResult = "Hey, got caught up in some messy traffic out here. Running a bit behind but should be there shortly!";
-          } else if (tone === "professional email format") {
-            textResult = "Hello, I am writing to notify you that I am experiencing unexpected delays due to local road traffic. I apologize for the inconvenience and estimate an updated arrival time of twenty minutes.";
-          } else {
-            textResult = "Ahhh traffic is completely blocked and I'm totally stuck on the highway!! Dynamic panic mode activated, running so late sorry!!!";
-          }
-        } else {
-          // Dynamic Default Core Processor
-          if (tone === "casual text format") {
-            textResult = "Hey! Just wanted to reach out regarding that situation. Let me know when you're free to catch up and sort it out!";
-          } else if (tone === "professional email format") {
-            textResult = "Dear recipient, I am writing to formally provide an update regarding our recent discussion. Please let me know your availability for a follow-up consultation.";
-          } else {
-            textResult = "Omg literal chaos everywhere right now, everything is going crazy at the exact same time 💀 text you ASAP!";
-          }
-        }
+      try {
+        const aiInitialize = new GoogleGenerativeAI(API_KEY);
+        // Using the robust, client-side friendly Gemini Flash generation engine model
+        const modelEngine = aiInitialize.getGenerativeModel({ model: "gemini-2.5-flash" });
 
-        outputDiv.innerText = textResult;
+        const promptTemplate = `You are an expert human copywriter. Take the user's messy instruction text and turn it into a completely unique, natural message layout. 
+        Strict tone and formatting layout target constraint requirement rule: ${tone}. 
+        Do NOT wrap the output in quotes. Do NOT provide an intro greeting note, summary statement description, explanation text, or bullet points. Just deliver the final human draft message directly.
+        
+        User input scenario detail: ${input}`;
+
+        const requestProcessing = await modelEngine.generateContent(promptTemplate);
+        const aiOutputResult = requestProcessing.response.text().trim();
+
+        outputDiv.innerText = aiOutputResult;
         copyBtn.style.display = "block";
         copyBtn.innerText = "📋 Copy to Clipboard";
-      }, 400);
+
+      } catch (error) {
+        console.error(error);
+        outputDiv.innerText = "Connection validation check failed. Please refresh your page view frame and try again!";
+      }
     }
 
-    function copyText() {
+    window.copyText = function() {
       const textToCopy = document.getElementById('output').innerText;
       navigator.clipboard.writeText(textToCopy);
       document.getElementById('copyButton').innerText = "✅ Copied Successfully!";
