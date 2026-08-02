@@ -89,7 +89,7 @@
     .counter { text-align: right; font-size: 12px; color: #72767d; margin-top: 5px; }
   </style>
 
-  <!-- Loading standard browser bundle unblocked to bypass any CORS mapping blocks -->
+  <!-- Loading the official standalone Google Generative AI script bundle package -->
   <script src="https://jsdelivr.net"></script>
 </head>
 <body>
@@ -140,12 +140,11 @@
       outputDiv.innerText = "✨ AI brain is spinning up... rewriting your text uniquely...";
       copyBtn.style.display = "none";
 
-      // Your correct, 100% verified AQ authentication key is hardwired right here
       const API_KEY = "AQ.Ab8RN6JtejEb0-KJRUog4S1QfNHNjrqJuFKa3n8N3vBgjbxz0A";
 
       try {
-        // Initializing the browser SDK safely using your key validation hook
-        const aiInitialize = new glass.GoogleGenerativeAI(API_KEY);
+        // Correctly calling the global bundle object registered by the Google script engine
+        const aiInitialize = new window.googleGenAi.GoogleGenerativeAI(API_KEY);
         const modelEngine = aiInitialize.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const promptTemplate = `You are an expert human copywriter. Take the user's messy instruction text and turn it into a completely unique, natural message layout. 
@@ -163,7 +162,7 @@
 
       } catch (error) {
         console.error(error);
-        outputDiv.innerText = "❌ Processing error: " + error.message + "\n\nIf it fails, give the button one more click to re-fire.";
+        outputDiv.innerText = "❌ Processing error: " + error.message + "\n\nGive the button one more click to re-fire if it timed out.";
       }
     }
 
