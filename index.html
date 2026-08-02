@@ -137,11 +137,9 @@
       outputDiv.innerText = "✨ AI brain is spinning up... rewriting your text uniquely...";
       copyBtn.style.display = "none";
 
-      const API_KEY = "AQ.Ab8RN6JtejEb0-KJRUog4S1QfNHNjrqJuFKa3n8N3vBgjbxz0A";
-
       try {
-        // Fixed standard URL text formatting to ensure smooth browser request handling
-        const endpointUrl = "https://googleapis.com" + API_KEY;
+        // Absolute full working address link without using variables or brackets
+        const endpointUrl = "https://googleapis.com";
 
         const response = await fetch(endpointUrl, {
           method: "POST",
@@ -159,7 +157,7 @@
 
         const data = await response.json();
         
-        // Correct array reading layout to extract text cleanly from raw Gemini data maps
+        // Dynamic payload parsing setup to grab text directly from Gemini
         if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
           const aiOutputResult = data.candidates[0].content.parts[0].text.trim();
           outputDiv.innerText = aiOutputResult;
@@ -168,12 +166,12 @@
         } else if (data && data.error) {
           outputDiv.innerText = "❌ Google API Error: " + data.error.message;
         } else {
-          outputDiv.innerText = "Received an unexpected data format. Give the button another click!";
+          outputDiv.innerText = "Received an unexpected data format from Google. Click again!";
         }
 
       } catch (error) {
         console.error(error);
-        outputDiv.innerText = "❌ Network processing error: " + error.message + "\n\nMake sure your device has a stable internet connection and try again.";
+        outputDiv.innerText = "❌ Network processing error: " + error.message;
       }
     }
 
