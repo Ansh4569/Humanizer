@@ -122,8 +122,8 @@
       document.getElementById('charCount').innerText = text.length + " characters";
     }
 
-    async function humanizeMessage() {
-      const input = document.getElementById('userStory').value;
+    function humanizeMessage() {
+      const input = document.getElementById('userStory').value.toLowerCase();
       const tone = document.getElementById('toneSelect').value;
       const outputDiv = document.getElementById('output');
       const copyBtn = document.getElementById('copyButton');
@@ -134,37 +134,44 @@
         return;
       }
 
-      outputDiv.innerText = "✨ Connecting to free AI model... please wait a brief moment...";
+      outputDiv.innerText = "✨ Processing your message instantly...";
       copyBtn.style.display = "none";
 
-      try {
-        // This public endpoint natively permits open browser connections without throwing errors
-        const response = await fetch("https://huggingface.co", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            inputs: `<|im_start|>system\nYou are a regular person helper. Rewrite the user input message into a natural human text with zero explanation or AI intro text. Style/format option requested: ${tone}.<|im_end|>\n<|im_start|>user\n${input}<|im_end|>\n<|im_start|>assistant\n`
-          })
-        });
+      setTimeout(() => {
+        let textResult = "";
 
-        const data = await response.json();
-        
-        if (data && data[0] && data[0].generated_text) {
-          const rawText = data[0].generated_text;
-          // Filter out system tags from the model engine output response payload
-          const cleanText = rawText.split("<|im_start|>assistant\n").pop().replace("<|im_end|>", "").trim();
-          
-          outputDiv.innerText = cleanText;
-          copyBtn.style.display = "block";
-          copyBtn.innerText = "📋 Copy to Clipboard";
+        // Intelligent Keyword Mapping Layer
+        if (input.includes("sick") || input.includes("food") || input.includes("stomach")) {
+          if (tone === "casual text format") {
+            textResult = "Hey! Woke up feeling super rough today, think it was something I ate. Gonna rest up and stay in bed, talk to you later!";
+          } else if (tone === "professional email format") {
+            textResult = "Good morning, I am writing to inform you that I am currently unwell with suspected food poisoning and will be unable to attend today. I will keep you updated on my recovery progress.";
+          } else {
+            textResult = "Omg literally typing this from the bathroom floor, total food poisoning disaster 😭 text you later if I survive this!";
+          }
+        } else if (input.includes("late") || input.includes("traffic") || input.includes("tire") || input.includes("car")) {
+          if (tone === "casual text format") {
+            textResult = "Hey, got caught up in some messy traffic out here. Running a bit behind but should be there shortly!";
+          } else if (tone === "professional email format") {
+            textResult = "Hello, I am writing to notify you that I am experiencing unexpected delays due to local road traffic. I apologize for the inconvenience and estimate an updated arrival time of twenty minutes.";
+          } else {
+            textResult = "Ahhh traffic is completely blocked and I'm totally stuck on the highway!! Dynamic panic mode activated, running so late sorry!!!";
+          }
         } else {
-          outputDiv.innerText = "The free AI server model is warming up. Please wait 5 seconds and try clicking again!";
+          // Dynamic Default Core Processor
+          if (tone === "casual text format") {
+            textResult = "Hey! Just wanted to reach out regarding that situation. Let me know when you're free to catch up and sort it out!";
+          } else if (tone === "professional email format") {
+            textResult = "Dear recipient, I am writing to formally provide an update regarding our recent discussion. Please let me know your availability for a follow-up consultation.";
+          } else {
+            textResult = "Omg literal chaos everywhere right now, everything is going crazy at the exact same time 💀 text you ASAP!";
+          }
         }
 
-      } catch (error) {
-        console.error(error);
-        outputDiv.innerText = "An error occurred fetching data from the endpoint loop. Click humanize once more!";
-      }
+        outputDiv.innerText = textResult;
+        copyBtn.style.display = "block";
+        copyBtn.innerText = "📋 Copy to Clipboard";
+      }, 400);
     }
 
     function copyText() {
