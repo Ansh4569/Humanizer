@@ -138,7 +138,7 @@
       copyBtn.style.display = "none";
 
       try {
-        // Absolute full working address link without using variables or brackets
+        // FIXED URL VALUE: Handing the exact full domain target parameter directly
         const endpointUrl = "https://googleapis.com";
 
         const response = await fetch(endpointUrl, {
@@ -157,7 +157,7 @@
 
         const data = await response.json();
         
-        // Dynamic payload parsing setup to grab text directly from Gemini
+        // Correct array reading layout to extract text cleanly from raw Gemini data maps
         if (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
           const aiOutputResult = data.candidates[0].content.parts[0].text.trim();
           outputDiv.innerText = aiOutputResult;
@@ -166,7 +166,7 @@
         } else if (data && data.error) {
           outputDiv.innerText = "❌ Google API Error: " + data.error.message;
         } else {
-          outputDiv.innerText = "Received an unexpected data format from Google. Click again!";
+          outputDiv.innerText = "Received an unexpected data format. Give the button another click!";
         }
 
       } catch (error) {
