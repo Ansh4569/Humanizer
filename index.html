@@ -88,14 +88,9 @@
     #output { font-size: 15px; line-height: 1.5; color: #ffffff; white-space: pre-wrap; }
     .counter { text-align: right; font-size: 12px; color: #72767d; margin-top: 5px; }
   </style>
-  
-  <script type="importmap">
-    {
-      "imports": {
-        "@google/generative-ai": "https://esm.run"
-      }
-    }
-  </script>
+
+  <!-- Loaded directly as an unblocked standalone browser package to prevent any CORS library failures -->
+  <script src="https://jsdelivr.net"></script>
 </head>
 <body>
 
@@ -124,15 +119,13 @@
     </div>
   </div>
 
-  <script type="module">
-    import { GoogleGenerativeAI } from "@google/generative-ai";
-
-    window.updateCount = function() {
+  <script>
+    function updateCount() {
       const text = document.getElementById('userStory').value;
       document.getElementById('charCount').innerText = text.length + " characters";
     }
 
-    window.humanizeMessage = async function() {
+    async function humanizeMessage() {
       const input = document.getElementById('userStory').value;
       const tone = document.getElementById('toneSelect').value;
       const outputDiv = document.getElementById('output');
@@ -144,19 +137,20 @@
         return;
       }
 
-      outputDiv.innerText = "✨ Connecting directly to Google Gemini... rewriting text...";
+      outputDiv.innerText = "✨ AI brain is spinning up... rewriting your text uniquely...";
       copyBtn.style.display = "none";
 
-      // ⚠️ PASTE YOUR KEY STARTING WITH 'AIzaSy' DIRECTLY INSIDE THE QUOTES BELOW:
+      // Make sure this matches your real developer key string starting explicitly with AIzaSy!
       const API_KEY = "YOUR_AIzaSy_KEY_HERE";
 
       try {
-        if (API_KEY.includes("YOUR_AIzaSy_KEY_HERE") || !API_KEY.startsWith("AIzaSy")) {
-          outputDiv.innerText = "🚨 Stop! The API Key configuration is invalid. Please paste a key that begins explicitly with the characters 'AIzaSy'.";
+        if (API_KEY.includes("YOUR_AIzaSy") || !API_KEY.startsWith("AIzaSy")) {
+          outputDiv.innerText = "🚨 Stop! Paste your real Gemini developer key inside the script first (The key starting with 'AIzaSy').";
           return;
         }
 
-        const aiInitialize = new GoogleGenerativeAI(API_KEY);
+        // Accessing the library constructor globally from the standalone bundle setup
+        const aiInitialize = new glass.GoogleGenerativeAI(API_KEY);
         const modelEngine = aiInitialize.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const promptTemplate = `You are an expert human copywriter. Take the user's messy instruction text and turn it into a completely unique, natural message layout. 
@@ -174,11 +168,11 @@
 
       } catch (error) {
         console.error(error);
-        outputDiv.innerText = "❌ Network processing error: " + error.message + "\n\nVerify that your API key is correct and try again!";
+        outputDiv.innerText = "❌ Processing error: " + error.message + "\n\nVerify your key configuration value is correct.";
       }
     }
 
-    window.copyText = function() {
+    function copyText() {
       const textToCopy = document.getElementById('output').innerText;
       navigator.clipboard.writeText(textToCopy);
       document.getElementById('copyButton').innerText = "✅ Copied Successfully!";
